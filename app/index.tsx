@@ -25,8 +25,9 @@ export default function Home() {
             placeholderTextColor="black"
             style={styles.input}
             multiline
+            maxLength={5000}
           />
-          <Feather name="arrow-right-circle" color="blue" size={24} />
+          <Feather name="arrow-right-circle" color="royalblue" size={24} />
         </View>
         <View
           style={{
@@ -35,9 +36,10 @@ export default function Home() {
             alignItems: 'center',
           }}>
           <FontAwesome name="microphone" color="black" size={24} />
-          <Text style={{ fontWeight: 'bold', color: 'grey' }}>42/1000</Text>
+          <Text style={{ fontWeight: 'bold', color: 'grey' }}>{input?.length}/1000</Text>
         </View>
       </View>
+      <View style={styles.outputContainer} />
     </View>
   );
 }
@@ -60,11 +62,15 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     padding: 20,
+    gap: 5,
     borderBottomWidth: 1,
     borderColor: 'gainsboro',
   },
   input: {
+    flex: 1,
     fontSize: 16,
     fontWeight: '400',
+    minHeight: 200,
+    paddingRight: 5,
   },
 });
