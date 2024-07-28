@@ -1,7 +1,7 @@
 import { Entypo, Feather, FontAwesome, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
-import { View, StyleSheet, Text, Pressable, TextInput, ScrollView } from 'react-native';
+import { View, StyleSheet, Text, Pressable, TextInput } from 'react-native';
 
 import { supabase } from '~/utils/supabase';
 
@@ -10,7 +10,9 @@ export default function Home() {
   const [output, setOutput] = useState('');
 
   const translate = async (text: string) => {
-    const { data, error } = await supabase.functions.invoke('translate');
+    const { data, error } = await supabase.functions.invoke('translate', {
+      body: JSON.stringify({ name: 'Anil' }),
+    });
     console.log(data);
     console.log(error);
     return 'translation';
@@ -37,7 +39,6 @@ export default function Home() {
             value={input}
             onChangeText={setInput}
             placeholder="Enter here!"
-            placeholderTextColor="black"
             style={styles.input}
             multiline
             maxLength={5000}
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
   language: {
     fontSize: 18,
     fontWeight: '500',
-    color: 'blue',
+    color: 'royalblue',
   },
   inputContainer: {
     padding: 20,
