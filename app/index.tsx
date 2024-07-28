@@ -10,12 +10,10 @@ export default function Home() {
   const [output, setOutput] = useState('');
 
   const translate = async (text: string) => {
-    const { data, error } = await supabase.functions.invoke('translate', {
-      body: JSON.stringify({ name: 'Anil' }),
+    const { data } = await supabase.functions.invoke('translate', {
+      body: JSON.stringify({ input, from: 'English', to: 'Turkish' }),
     });
-    console.log(data);
-    console.log(error);
-    return 'translation';
+    return data?.content || 'Something went wrong';
   };
 
   const onTranslate = async () => {
@@ -38,7 +36,7 @@ export default function Home() {
           <TextInput
             value={input}
             onChangeText={setInput}
-            placeholder="Enter here!"
+            placeholder="Enter your text here!"
             style={styles.input}
             multiline
             maxLength={5000}
