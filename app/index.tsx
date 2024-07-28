@@ -3,11 +3,26 @@ import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { View, StyleSheet, Text, Pressable, TextInput, ScrollView } from 'react-native';
 
+import { supabase } from '~/utils/supabase';
+
 export default function Home() {
-  const [input, setInput] = useState<string>('');
-  const [output, setOutput] = useState<string>('');
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+
+  const translate = async (text: string) => {
+    const { data, error } = await supabase.functions.invoke('translate');
+    console.log(data);
+    console.log(error);
+    return 'translation';
+  };
+
+  const onTranslate = async () => {
+    const translation = await translate(input);
+    setOutput(translation);
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Stack.Screen options={{ title: 'Translate' }} />
       <View style={styles.languageContainer}>
         <Text style={styles.language}>English</Text>
@@ -27,7 +42,7 @@ export default function Home() {
             multiline
             maxLength={5000}
           />
-          <Feather name="arrow-right-circle" color="royalblue" size={18} />
+          <Feather onPress={onTranslate} name="arrow-right-circle" color="royalblue" size={18} />
         </View>
         <View
           style={{
@@ -55,7 +70,7 @@ export default function Home() {
           </View>
         </View>
       )}
-    </ScrollView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
@@ -91,8 +106,6 @@ const styles = StyleSheet.create({
   outputContainer: {
     padding: 20,
     gap: 5,
-    borderBottomWidth: 1,
-    borderColor: 'gainsboro',
   },
   output: {
     flex: 1,
