@@ -9,6 +9,8 @@ import { supabase } from '~/utils/supabase';
 export default function Home() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
+  const [permissionResponse, requestPermission] = Audio.usePermissions();
+  const [recording, setRecording] = useState<Audio.Recording>();
 
   const textToSpeeh = async (text: string) => {
     const { data, error } = await supabase.functions.invoke('text-to-speech', {
@@ -34,6 +36,42 @@ export default function Home() {
     const translation = await translate(input);
     setOutput(translation);
   };
+
+  async function startRecording() {
+    try {
+      if (permissionResponse?.status !== 'granted') {
+        console.log('Requesting permission..');
+        await requestPermission();
+      }
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
+
+      console.log('Starting recording..');
+      const { recording } = await Audio.Recording.createAsync(
+        Audio.RecordingOptionsPresets.HIGH_QUALITY
+      );
+      setRecording(recording);
+      console.log('Recording started');
+    } catch (err) {
+      console.error('Failed to start recording', err);
+    }
+  }
+
+  async function stopRecording() {
+    if (!recording) {
+      return;
+    }
+    console.log('Stopping recording..');
+    setRecording(undefined);
+    await recording.stopAndUnloadAsync();
+    await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+    });
+    const uri = recording.getURI();
+    console.log('Recording stopped and stored at', uri);
+  }
 
   return (
     <View style={styles.container}>
@@ -61,7 +99,11 @@ export default function Home() {
             justifyContent: 'space-between',
             alignItems: 'center',
           }}>
-          <FontAwesome name="microphone" color="dimgrey" size={18} />
+          {recording ? (
+            <FontAwesome6 name="stop-circle" color="dimgray" size={18} onPress={stopRecording} />
+          ) : (
+            <FontAwesome onPress={startRecording} name="microphone" color="dimgrey" size={18} />
+          )}
           <Text style={{ fontWeight: 'bold', color: 'grey' }}>{input?.length}/1000</Text>
         </View>
       </View>
