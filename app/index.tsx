@@ -1,7 +1,7 @@
 import { Entypo, Feather, FontAwesome, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
-import { View, StyleSheet, Text, Pressable, TextInput } from 'react-native';
+import { View, StyleSheet, Text, TextInput } from 'react-native';
 
 import { supabase } from '~/utils/supabase';
 
@@ -11,9 +11,9 @@ export default function Home() {
 
   const translate = async (text: string) => {
     const { data } = await supabase.functions.invoke('translate', {
-      body: JSON.stringify({ input, from: 'English', to: 'Turkish' }),
+      body: JSON.stringify({ input: text, from: 'English', to: 'Turkish' }),
     });
-    return data?.content || 'Something went wrong';
+    return data?.choices?.[0]?.message?.content || 'Something went wrong';
   };
 
   const onTranslate = async () => {
@@ -26,9 +26,7 @@ export default function Home() {
       <Stack.Screen options={{ title: 'Translate' }} />
       <View style={styles.languageContainer}>
         <Text style={styles.language}>English</Text>
-        <Pressable>
-          <Entypo name="swap" color="black" size={24} />
-        </Pressable>
+        <Entypo name="swap" color="black" size={24} />
         <Text style={styles.language}>Turkish</Text>
       </View>
       <View style={styles.inputContainer}>
