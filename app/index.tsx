@@ -1,4 +1,5 @@
 import { Entypo, Feather, FontAwesome, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
+import { Audio } from 'expo-av';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { View, StyleSheet, Text, TextInput } from 'react-native';
@@ -8,6 +9,20 @@ import { supabase } from '~/utils/supabase';
 export default function Home() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
+
+  const textToSpeeh = async (text: string) => {
+    const { data, error } = await supabase.functions.invoke('text-to-speech', {
+      body: JSON.stringify({ input: text }),
+    });
+    console.log(data);
+    console.log(error);
+    if (data) {
+      const { sound } = await Audio.Sound.createAsync({
+        uri: `data:audio/mp3;base64,${data.mp3Base64}`,
+      });
+      sound.playAsync();
+    }
+  };
 
   const translate = async (text: string) => {
     const { data } = await supabase.functions.invoke('translate', {
@@ -61,7 +76,12 @@ export default function Home() {
                 flexDirection: 'row',
                 alignItems: 'center',
               }}>
-              <FontAwesome6 name="volume-high" size={18} color="dimgray" />
+              <FontAwesome6
+                onPress={() => textToSpeeh(output)}
+                name="volume-high"
+                size={18}
+                color="dimgray"
+              />
               <FontAwesome5 name="copy" size={18} color="dimgray" />
             </View>
           </View>
