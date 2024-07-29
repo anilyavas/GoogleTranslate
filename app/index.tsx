@@ -14,8 +14,7 @@ export default function Home() {
     const { data, error } = await supabase.functions.invoke('text-to-speech', {
       body: JSON.stringify({ input: text }),
     });
-    console.log(data);
-    console.log(error);
+
     if (data) {
       const { sound } = await Audio.Sound.createAsync({
         uri: `data:audio/mp3;base64,${data.mp3Base64}`,
