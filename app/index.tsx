@@ -1,5 +1,6 @@
 import { Entypo, Feather, FontAwesome, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { View, StyleSheet, Text, TextInput } from 'react-native';
@@ -71,6 +72,14 @@ export default function Home() {
     });
     const uri = recording.getURI();
     console.log('Recording stopped and stored at', uri);
+    if (uri) {
+      const audioBase64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+      const { data, error } = await supabase.functions.invoke('speech-to-text', {
+        body: JSON.stringify({ audioBase64 }),
+      });
+      console.log(data);
+      console.log(error);
+    }
   }
 
   return (
