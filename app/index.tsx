@@ -77,8 +77,9 @@ export default function Home() {
       const { data, error } = await supabase.functions.invoke('speech-to-text', {
         body: JSON.stringify({ audioBase64 }),
       });
-      console.log(data);
-      console.log(error);
+      setInput(data.text);
+      const translation = await translate(data.text);
+      setOutput(translation);
     }
   }
 
