@@ -1,7 +1,7 @@
 import { Entypo, Feather, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
-import { View, StyleSheet, Text, TextInput, Platform, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, TextInput } from 'react-native';
 
 import AudioRecording from '~/components/AudioRecording';
 import { audioToText, textToSpeeh, translate } from '~/utils/translation';
