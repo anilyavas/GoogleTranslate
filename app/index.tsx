@@ -1,8 +1,9 @@
 import { Entypo, Feather, FontAwesome5, FontAwesome6 } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
-import { View, StyleSheet, Text, TextInput } from 'react-native';
+import { View, StyleSheet, Text, TextInput, FlatList } from 'react-native';
 
+import { languages } from '~/assets/languages';
 import AudioRecording from '~/components/AudioRecording';
 import { audioToText, textToSpeeh, translate } from '~/utils/translation';
 
@@ -11,6 +12,7 @@ export default function Home() {
   const [output, setOutput] = useState('');
   const [languageFrom, setLanguageFrom] = useState('English');
   const [languageTo, setLanguageTo] = useState('Turkish');
+  const [selectLanguageMode, setSelectLanguageMode] = useState<'from' | 'to' | null>();
 
   const onTranslate = async () => {
     const translation = await translate(input, languageFrom, languageTo);
@@ -24,11 +26,37 @@ export default function Home() {
     setOutput(translation);
   };
 
+  if (selectLanguageMode) {
+    return (
+      <FlatList
+        data={languages}
+        contentContainerStyle={styles.languageList}
+        numColumns={5}
+        renderItem={({ item }) => (
+          <Text
+            onPress={() => {
+              if (selectLanguageMode === 'from') {
+                setLanguageFrom(item.name);
+              } else {
+                setLanguageTo(item.name);
+              }
+              setSelectLanguageMode(null);
+            }}
+            style={styles.languageName}>
+            {item.name}
+          </Text>
+        )}
+      />
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: 'Translate' }} />
       <View style={styles.languageContainer}>
-        <Text style={styles.language}>{languageFrom}</Text>
+        <Text onPress={() => setSelectLanguageMode('from')} style={styles.language}>
+          {languageFrom}
+        </Text>
         <Entypo
           name="swap"
           color="black"
@@ -38,7 +66,9 @@ export default function Home() {
             setLanguageTo(languageFrom);
           }}
         />
-        <Text style={styles.language}>{languageTo}</Text>
+        <Text onPress={() => setSelectLanguageMode('to')} style={styles.language}>
+          {languageTo}
+        </Text>
       </View>
       <View style={styles.inputContainer}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -126,5 +156,14 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     minHeight: 200,
     paddingRight: 5,
+  },
+  languageList: {
+    flex: 1,
+    gap: 10,
+    alignItems: 'center',
+  },
+  languageName: {
+    paddingVertical: 10,
+    paddingHorizontal: 5,
   },
 });
