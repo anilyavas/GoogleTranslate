@@ -9,16 +9,18 @@ import { audioToText, textToSpeeh, translate } from '~/utils/translation';
 export default function Home() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
+  const [languageFrom, setLanguageFrom] = useState('English');
+  const [languageTo, setLanguageTo] = useState('Turkish');
 
   const onTranslate = async () => {
-    const translation = await translate(input);
+    const translation = await translate(input, languageFrom, languageTo);
     setOutput(translation);
   };
 
   const speechToText = async (uri: string) => {
     const text = await audioToText(uri);
     setInput(text);
-    const translation = await translate(text);
+    const translation = await translate(text, languageFrom, languageTo);
     setOutput(translation);
   };
 
@@ -26,9 +28,17 @@ export default function Home() {
     <View style={styles.container}>
       <Stack.Screen options={{ title: 'Translate' }} />
       <View style={styles.languageContainer}>
-        <Text style={styles.language}>English</Text>
-        <Entypo name="swap" color="black" size={24} />
-        <Text style={styles.language}>Turkish</Text>
+        <Text style={styles.language}>{languageFrom}</Text>
+        <Entypo
+          name="swap"
+          color="black"
+          size={24}
+          onPress={() => {
+            setLanguageFrom(languageTo);
+            setLanguageTo(languageFrom);
+          }}
+        />
+        <Text style={styles.language}>{languageTo}</Text>
       </View>
       <View style={styles.inputContainer}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
